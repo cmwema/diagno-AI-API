@@ -44,7 +44,9 @@ class UserRegisterSerializer(serializers.ModelSerializer, ImageUploadMixin):
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer, ImageUploadMixin):
-    image = serializers.ImageField(required=False)
+    image = serializers.ImageField(required=False, write_only=True)
+    first_name = serializers.CharField(max_length=255, required=False)
+    last_name = serializers.CharField(max_length=255, required=False)
 
     class Meta:
         model = User
@@ -52,10 +54,14 @@ class ProfileUpdateSerializer(serializers.ModelSerializer, ImageUploadMixin):
 
     def update(self, instance, validated_data):
         image = validated_data.pop('image', None)
+        first_name = validated_data.pop('first_name', None)
+        last_name = validated_data.pop('last_name', None)
         if image:
             instance.image = self.upload_image(image)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
+        if first_name:
+            instance.first_name = validated_data.get('first_name', instance.first_name)
+        if last_name:
+            instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
         return instance
 
