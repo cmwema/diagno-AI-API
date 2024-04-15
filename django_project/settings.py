@@ -2,7 +2,6 @@ from pathlib import Path
 import cloudinary
 from datetime import timedelta
 import environ
-# import dj_database_url
 
 
 env = environ.Env(DEBUG=(bool, False))
@@ -37,6 +36,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'cloudinary',
     'accounts',
+    'predictions',
 
 ]
 
