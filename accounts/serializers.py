@@ -47,13 +47,16 @@ class ProfileUpdateSerializer(serializers.ModelSerializer, ImageUploadMixin):
     image = serializers.ImageField(required=False)
 
     class Meta:
+        # Specify the model and fields to be serialized
         model = User
-        fields = ["image"]
+        fields = ["image", "first_name", "last_name"]
 
     def update(self, instance, validated_data):
         image = validated_data.pop('image', None)
         if image:
             instance.image = self.upload_image(image)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
         return instance
 
@@ -168,7 +171,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "email", "first_name", "last_name"]
+        fields = ["id", "email", "image", "first_name", "last_name"]
 
     def validate(self, attrs):
         return super().validate(attrs)

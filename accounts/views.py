@@ -1,6 +1,6 @@
-from rest_framework.generics import GenericAPIView, RetrieveAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView, UpdateAPIView
 from .serializers import (UserRegisterSerializer, LoginSerializer, PasswordResetRequestSerializer,
-                          SetNewPasswordSerializer, ProfileSerializer)
+                          SetNewPasswordSerializer, ProfileSerializer, ProfileUpdateSerializer)
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -65,6 +65,12 @@ class UserProfile(RetrieveAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = ProfileSerializer
+
+
+class UpdateUserProfile(UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProfileUpdateSerializer
 
 
 class PasswordResetRequestView(GenericAPIView):
