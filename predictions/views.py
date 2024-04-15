@@ -7,8 +7,8 @@ from .utils import get_predicted_value, helper, symptoms_dict
 class SymptomsList(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self):
-        return Response({"symptoms": [key for key in symptoms_dict.keys()]})
+    def get(self, request):
+        return Response({"symptoms": list(symptoms_dict.keys())})
 
 
 class Predict(APIView):
