@@ -25,11 +25,11 @@ def get_precautions(disease):
 
 
 def get_medications(disease):
-    return medications[medications['Disease'] == disease]['Medication'].values.tolist()
+    return medications[medications['Disease'] == disease]['Medication'].values
 
 
 def get_diets(disease):
-    return diets[diets['Disease'] == disease]['Diet'].values.tolist()
+    return diets[diets['Disease'] == disease]['Diet'].values
 
 
 def get_workout(disease):
