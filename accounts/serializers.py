@@ -47,7 +47,6 @@ class ProfileUpdateSerializer(serializers.ModelSerializer, ImageUploadMixin):
     image = serializers.ImageField(required=False)
 
     class Meta:
-        # Specify the model and fields to be serialized
         model = User
         fields = ["image", "first_name", "last_name"]
 
