@@ -1,7 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .utils import get_predicted_value, helper
+from .utils import get_predicted_value, helper, symptoms_dict
+
+
+class SymptomsList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self):
+        return Response({"symptoms": [key for key in symptoms_dict.keys()]})
 
 
 class Predict(APIView):
