@@ -2,6 +2,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .utils import get_predicted_value, helper, symptoms_dict
+from django.db import transaction
+import json
 
 
 class SymptomsList(APIView):
@@ -14,6 +16,7 @@ class SymptomsList(APIView):
 class Predict(APIView):
     permission_classes = [IsAuthenticated]
 
+    @transaction.atomic
     def post(self, request):
         # Assuming the symptoms are sent in the request body as a comma-separated string
         symptoms = request.data.get("symptoms", "")
@@ -35,3 +38,4 @@ class Predict(APIView):
         }
 
         return Response(response_data)
+

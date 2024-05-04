@@ -5,7 +5,7 @@ from joblib import load
 
 model = load("./models/RF_model.joblib")
 
-sym_des = pd.read_csv("./datasets/symtoms_df.csv")
+sym_des = pd.read_csv("./datasets/symptoms_df.csv")
 precautions = pd.read_csv("./datasets/precautions_df.csv")
 workout = pd.read_csv("./datasets/workout_df.csv")
 description = pd.read_csv("./datasets/description.csv")
@@ -91,7 +91,7 @@ symptoms_dict = {'itching': 0, 'skin_rash': 1, 'nodal_skin_eruptions': 2, 'conti
                  'silver_like_dusting': 126, 'small_dents_in_nails': 127, 'inflammatory_nails': 128, 'blister': 129,
                  'red_sore_around_nose': 130,
                  'yellow_crust_ooze': 131}
-diseases_list = {15: 'Fungal infection', 4: 'Allergy', 16: 'GERD', 9: 'Chronic cholestasis', 14: 'Drug Reaction',
+diseases_dict = {15: 'Fungal infection', 4: 'Allergy', 16: 'GERD', 9: 'Chronic cholestasis', 14: 'Drug Reaction',
                  33: 'Peptic ulcer diseae', 1: 'AIDS', 12: 'Diabetes ', 17: 'Gastroenteritis', 6: 'Bronchial Asthma',
                  23: 'Hypertension ', 30: 'Migraine', 7: 'Cervical spondylosis', 32: 'Paralysis (brain hemorrhage)',
                  28: 'Jaundice',
@@ -111,5 +111,11 @@ def get_predicted_value(patient_symptoms):
     input_vector = np.zeros(len(symptoms_dict))
     for symptom in patient_symptoms:
         input_vector[symptoms_dict[symptom]] = 1
-    predicted_disease_index = model.predict([input_vector])[0]
-    return diseases_list[predicted_disease_index]
+
+    try:
+        predicted_disease = model.predict([input_vector])
+        # print(predicted_disease[0])
+        # print(diseases_dict[predicted_disease[0]])
+        return diseases_dict[predicted_disease[0]]
+    except Exception as e:
+        print(e)
