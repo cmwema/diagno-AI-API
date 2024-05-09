@@ -1,6 +1,6 @@
 from rest_framework.generics import GenericAPIView, RetrieveAPIView, UpdateAPIView
 from .serializers import (UserRegisterSerializer, LoginSerializer, PasswordResetRequestSerializer,
-                          SetNewPasswordSerializer, ProfileSerializer, ProfileUpdateSerializer)
+                          SetNewPasswordSerializer, ProfileUpdateSerializer)
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -9,6 +9,7 @@ from .models import OTP, User
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from rest_framework.response import Response
 
 
 class RegisterUserView(GenericAPIView):
@@ -61,16 +62,17 @@ class LoginUserView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserProfile(RetrieveAPIView):
-    queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = ProfileSerializer
-
-
 class UpdateUserProfile(UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = ProfileUpdateSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        updated_data = serializer.update(instance, serializer.validated_data)
+        return Response(updated_data)
 
 
 class PasswordResetRequestView(GenericAPIView):

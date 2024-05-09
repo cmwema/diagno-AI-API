@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, reverse
 from django.utils.translation import gettext_lazy as _
 from .models import User
 from django.contrib.auth import authenticate
@@ -49,6 +49,7 @@ class LoginSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(max_length=255, read_only=True)
     access_token = serializers.CharField(max_length=255, read_only=True)
     refresh_token = serializers.CharField(max_length=255, read_only=True)
+    image = serializers.ImageField(read_only=True)
 
     class Meta:
         model = User
@@ -56,6 +57,7 @@ class LoginSerializer(serializers.ModelSerializer):
             "id",
             "email",
             "password",
+            "image",
             "full_name",
             "access_token",
             "refresh_token",
@@ -78,6 +80,7 @@ class LoginSerializer(serializers.ModelSerializer):
             "id": user.id,
             "email": user.email,
             "full_name": user.get_full_name,
+            "image": user.image,
             "access_token": str(user_tokens.get("access")),
             "refresh_token": str(user_tokens.get("refresh")),
         }
@@ -148,20 +151,9 @@ class SetNewPasswordSerializer(serializers.Serializer):
             return AuthenticationFailed("reset ink is invalid", 401)
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = ["id", "email", "image", "first_name", "last_name"]
-
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-
 class ProfileUpdateSerializer(serializers.ModelSerializer, ImageUploadMixin):
     id = serializers.UUIDField(read_only=True)
-    image = serializers.ImageField(required=False, write_only=True)
+    image = serializers.ImageField(required=False)
     first_name = serializers.CharField(max_length=255, required=False)
     last_name = serializers.CharField(max_length=255, required=False)
     email = serializers.EmailField(read_only=True)
@@ -174,14 +166,20 @@ class ProfileUpdateSerializer(serializers.ModelSerializer, ImageUploadMixin):
         image = validated_data.pop('image', None)
         first_name = validated_data.pop('first_name', None)
         last_name = validated_data.pop('last_name', None)
-        if image:
-            instance.image = self.upload_image(image)
-        if first_name:
-            instance.first_name = validated_data.get('first_name', instance.first_name)
-        if last_name:
-            instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.save()
-        return instance
-
-    def validate(self, attrs):
-        return super().validate(attrs)
+        try:
+            if image:
+                instance.image = self.upload_image(image)
+            if first_name:
+                instance.first_name = first_name
+            if last_name:
+                instance.last_name = last_name
+            instance.save()
+            return {
+                "id": instance.id,
+                "email": instance.email,
+                "first_name": instance.first_name,
+                "last_name": instance.last_name,
+                "image": f"{instance.image}",
+            }
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
