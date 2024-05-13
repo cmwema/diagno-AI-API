@@ -103,7 +103,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
             # relative_link = reverse(
             #     "password-reset-confirm", kwargs={"uidb64": uid64, "token": token}
             # )
-            abs_link = f"https://smart-doctor-web.vercel.app//password-reset/{uid64}/{token}"
+            abs_link = f"https://smart-doctor-web.vercel.app/password-reset/{uid64}/{token}"
             message = f"Hello {user.first_name}, use the link below to reset your password\n {abs_link}"
             data = {
                 "message": message,
