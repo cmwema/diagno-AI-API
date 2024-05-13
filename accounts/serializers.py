@@ -99,11 +99,11 @@ class PasswordResetRequestSerializer(serializers.Serializer):
             uid64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             request = self.context.get("request")
-            site_domain = get_current_site(request).domain
-            relative_link = reverse(
-                "password-reset-confirm", kwargs={"uidb64": uid64, "token": token}
-            )
-            abs_link = f"https://{site_domain}{relative_link}"
+            # site_domain = get_current_site(request).domain
+            # relative_link = reverse(
+            #     "password-reset-confirm", kwargs={"uidb64": uid64, "token": token}
+            # )
+            abs_link = f"https://smart-doctor-web.vercel.app//password-reset/{uid64}/{token}"
             message = f"Hello {user.first_name}, use the link below to reset your password\n {abs_link}"
             data = {
                 "message": message,
