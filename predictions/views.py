@@ -45,8 +45,8 @@ class Predict(APIView):
                 "predicted_disease": predicted_disease,
                 "description": f"{desc}",
                 "precautions": [x for x in pre],
-                "medications": med[0][1:-1].split(","), # remove [] then convert the string into array
-                "workout": workout[0][1:-1].split(","),
+                "medications": med[0][1:-1].split(","),
+                "workout": workout[0][:-1].split(","),
                 "diets": die[0][1:-1].split(",")
             }
             logger.info(f"Response Data: {response_data}")
